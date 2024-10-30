@@ -12,7 +12,9 @@ public class Item {
     private String description;
     private double price;
     private int stockLevel;
-    private String category;
+    private Category category;
+    private int threshold;
+    private boolean isAvailable;
 
     @DynamoDBHashKey(attributeName = "itemId")
     public String getItemId() {
@@ -57,14 +59,33 @@ public class Item {
 
     public void setStockLevel(int stockLevel) {
         this.stockLevel = stockLevel;
+        this.isAvailable = stockLevel > 0; // Update availability based on stock level
     }
 
     @DynamoDBAttribute(attributeName = "category")
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
+    }
+
+    @DynamoDBAttribute(attributeName = "threshold")
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
+    }
+
+    @DynamoDBAttribute(attributeName = "isAvailable")
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 }
