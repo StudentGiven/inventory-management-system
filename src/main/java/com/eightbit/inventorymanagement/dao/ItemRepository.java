@@ -2,12 +2,12 @@ package com.eightbit.inventorymanagement.dao;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.eightbit.inventorymanagement.model.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class ItemRepository {
     private DynamoDBMapper dynamoDBMapper;
 
     // Retrieve all available items
-    public List<Item> getAvailableItems() {
+    public PaginatedScanList<Item> getAvailableItems() {
 
         Map<String, AttributeValue> isAvailableFilter = new HashMap<>();
         isAvailableFilter.put(":isAvailable", new AttributeValue().withBOOL(true));
@@ -27,7 +27,6 @@ public class ItemRepository {
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("isAvailable = :isAvailable")
                 .withExpressionAttributeValues(isAvailableFilter);
-
         return dynamoDBMapper.scan(Item.class, scanExpression);
     }
 
