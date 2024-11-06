@@ -27,6 +27,7 @@ public class ItemService {
 
     // Add a new item to the inventory
     public Item addItem(Item item) {
+        validateNewItem(item);
         itemRepository.addItem(item);
         return item; // Returning the added item for confirmation
     }
@@ -43,12 +44,20 @@ public class ItemService {
 
     // Replenish stock for an item
     public boolean replenishStock(String itemId, int quantity) {
-        Item item = itemRepository.getItemById(itemId);
-        if (item != null && quantity > 0) {
-            itemRepository.replenishStock(itemId, quantity);
-            return true;
+        if (itemId == null || itemId.isEmpty()) {
+            throw new IllegalArgumentException("Item ID must be provided for stock replenishment.");
         }
-        return false;
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Replenishment quantity must be greater than zero.");
+        }
+
+        Item item = itemRepository.getItemById(itemId);
+        if (item == null) {
+            throw new IllegalArgumentException("Item with ID " + itemId + " does not exist.");
+        }
+
+        itemRepository.replenishStock(itemId, quantity);
+        return true;
     }
 
     // Set a threshold for an item
@@ -65,5 +74,27 @@ public class ItemService {
     public boolean isItemBelowThreshold(String itemId) {
         Item item = itemRepository.getItemById(itemId);
         return item != null && item.getStockLevel() < item.getThreshold();
+    }
+
+    // Validate new item details before adding it to the inventory
+    private void validateNewItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item must not be null.");
+        }
+        if (item.getItemId() == null || item.getItemId().isEmpty()) {
+            throw new IllegalArgumentException("Item ID must be provided.");
+        }
+        if (item.getItemName() == null || item.getItemName().isEmpty()) {
+            throw new IllegalArgumentException("Item name must be provided.");
+        }
+        if (item.getPrice() <= 0) {
+            throw new IllegalArgumentException("Item price must be greater than zero.");
+        }
+        if (item.getStockLevel() < 0) {
+            throw new IllegalArgumentException("Item stock level must not be negative.");
+        }
+        if (item.getThreshold() < 0) {
+            throw new IllegalArgumentException("Item threshold must not be negative.");
+        }
     }
 }

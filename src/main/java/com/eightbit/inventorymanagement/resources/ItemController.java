@@ -17,6 +17,15 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
+    /*
+    Manually wire dependency
+     */
+//    private ItemService itemService;
+//
+//    public void setItemService(ItemService itemService) {
+//        this.itemService = itemService;
+//    }
+
     // Retrieve all available items
     @GetMapping
     public ResponseEntity<List<Item>> getAvailableItems() {
@@ -62,6 +71,5 @@ public class ItemController {
         return isThresholdSet ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
 
 }
