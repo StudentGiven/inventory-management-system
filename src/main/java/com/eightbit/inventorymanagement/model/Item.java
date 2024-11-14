@@ -3,6 +3,7 @@ package com.eightbit.inventorymanagement.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedEnum;
 
 @DynamoDBTable(tableName = "Items")
 public class Item {
@@ -62,6 +63,7 @@ public class Item {
         this.isAvailable = stockLevel > 0; // Update availability based on stock level
     }
 
+    @DynamoDBTypeConvertedEnum
     @DynamoDBAttribute(attributeName = "category")
     public Category getCategory() {
         return category;
