@@ -44,6 +44,7 @@ public class ItemController {
     // Add a new item to the inventory
     @PostMapping
     public ResponseEntity<Item> addItem(@RequestBody Item item) {
+        System.out.println("Received item: " + item);
         Item newItem = itemService.addItem(item);
         return ResponseEntity.status(HttpStatus.CREATED).body(newItem);
     }

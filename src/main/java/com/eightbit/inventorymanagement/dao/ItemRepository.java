@@ -15,14 +15,18 @@ import java.util.Map;
 @Repository
 public class ItemRepository {
 
-    @Autowired
     private DynamoDBMapper dynamoDBMapper;
 
+    @Autowired
+    public ItemRepository(DynamoDBMapper dynamoDBMapper) {
+        this.dynamoDBMapper = dynamoDBMapper;
+    }
+
     // Retrieve all available items
-    public PaginatedScanList<Item> getAvailableItems() {
+    public List<Item> getAvailableItems() {
 
         Map<String, AttributeValue> isAvailableFilter = new HashMap<>();
-        isAvailableFilter.put(":isAvailable", new AttributeValue().withBOOL(true));
+        isAvailableFilter.put(":isAvailable", new AttributeValue().withN("1"));
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("isAvailable = :isAvailable")

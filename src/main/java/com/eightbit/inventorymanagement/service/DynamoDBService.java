@@ -6,12 +6,16 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.eightbit.inventorymanagement.model.Item;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DynamoDBService {
 
     private final DynamoDBMapper dynamoDBMapper;
     private final AmazonDynamoDB amazonDynamoDB;
 
+    @Autowired
     public DynamoDBService() {
         // Initialize the AmazonDynamoDB client and DynamoDBMapper
         this.amazonDynamoDB = AmazonDynamoDBClientBuilder.standard()
