@@ -1,6 +1,8 @@
 package com.eightbit.inventorymanagement.resources;
 
+import com.eightbit.inventorymanagement.model.Item;
 import com.eightbit.inventorymanagement.model.Order;
+import com.eightbit.inventorymanagement.model.OrderItem;
 import com.eightbit.inventorymanagement.model.OrderStatus;
 import com.eightbit.inventorymanagement.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,7 @@ public class OrderController {
 
     // Update items in an existing order
     @PutMapping("/{orderId}/items")
-    public ResponseEntity<Void> updateOrderItems(@PathVariable String orderId, @RequestBody List<Map<String, Object>> items) {
+    public ResponseEntity<Void> updateOrderItems(@PathVariable String orderId, @RequestBody List<OrderItem> items) {
         boolean isUpdated = orderService.updateOrderItems(orderId, items);
         return isUpdated ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();

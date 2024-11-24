@@ -17,6 +17,14 @@ public class Item {
     private int threshold;
     private boolean isAvailable;
 
+//    public Item() {
+//        this.itemId = "100001";
+//    }
+
+//    public Item(String itemId) {
+//        this.itemId = itemId;
+//    }
+
     @DynamoDBHashKey(attributeName = "itemId")
     public String getItemId() {
         return itemId;

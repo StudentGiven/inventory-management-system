@@ -15,7 +15,7 @@ import java.util.Map;
 @Repository
 public class ItemRepository {
 
-    private DynamoDBMapper dynamoDBMapper;
+    private final DynamoDBMapper dynamoDBMapper;
 
     @Autowired
     public ItemRepository(DynamoDBMapper dynamoDBMapper) {
@@ -27,6 +27,8 @@ public class ItemRepository {
 
         Map<String, AttributeValue> isAvailableFilter = new HashMap<>();
         isAvailableFilter.put(":isAvailable", new AttributeValue().withN("1"));
+//        isAvailableFilter.put(":isAvailable", new AttributeValue().withBOOL(true));
+
 
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
                 .withFilterExpression("isAvailable = :isAvailable")

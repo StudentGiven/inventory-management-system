@@ -32,5 +32,16 @@ public enum Category {
     OFFICE_SUPPLIES,
 
     // Items for pets, such as food, pet toys, and accessories.
-    PET_SUPPLIES
+    PET_SUPPLIES,
+
+    DEFAULT;
+
+    // Need to handle case
+    public static Category fromString(String category) {
+        try {
+            return valueOf(category);
+        } catch (IllegalArgumentException e) {
+            return DEFAULT;
+        }
+    }
 }
