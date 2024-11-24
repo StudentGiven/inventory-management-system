@@ -2,8 +2,7 @@ package com.eightbit.inventorymanagement.dao;
 
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.eightbit.inventorymanagement.model.Order;
-import com.eightbit.inventorymanagement.model.OrderStatus;
+import com.eightbit.inventorymanagement.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -127,10 +127,22 @@ public class OrderRepositoryTest {
         Order order = new Order();
         order.setOrderId("order123");
 
-        List<Map<String, Object>> items = List.of(
-                Map.of("itemId", "item1", "quantity", 2),
-                Map.of("itemId", "item2", "quantity", 1)
-        );
+//        List<Item> items = List.of(
+//                Map.of("itemId", "item1", "quantity", 2),
+//                Map.of("itemId", "item2", "quantity", 1)
+//        );
+        List<OrderItem> items = new ArrayList<>();
+        OrderItem item = new OrderItem();
+        item.setItemId("item123");
+        item.setQuantity(10);
+
+        OrderItem item2 = new OrderItem();
+        item.setItemId("item456");
+        item.setQuantity(5);
+
+        items.add(item);
+        items.add(item2);
+
 
         when(dynamoDBMapper.load(Order.class, "order123")).thenReturn(order);
 
@@ -144,10 +156,20 @@ public class OrderRepositoryTest {
     public void testUpdateOrderItems_OrderNotFound() {
         when(dynamoDBMapper.load(Order.class, "nonExistentId")).thenReturn(null);
 
-        List<Map<String, Object>> items = List.of(
-                Map.of("itemId", "item1", "quantity", 2),
-                Map.of("itemId", "item2", "quantity", 1)
-        );
+        List<OrderItem> items = new ArrayList<>();
+        OrderItem item = new OrderItem();
+        item.setItemId("item123");
+        item.setQuantity(10);
+
+        OrderItem item2 = new OrderItem();
+        item.setItemId("item456");
+        item.setQuantity(5);
+
+        items.add(item);
+        items.add(item2);
+
+        items.add(item);
+        items.add(item2);
 
         orderRepository.updateOrderItems("nonExistentId", items);
 

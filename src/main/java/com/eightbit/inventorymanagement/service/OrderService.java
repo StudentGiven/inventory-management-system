@@ -1,11 +1,16 @@
 package com.eightbit.inventorymanagement.service;
 
+import com.eightbit.inventorymanagement.dao.ItemRepository;
 import com.eightbit.inventorymanagement.dao.OrderRepository;
+import com.eightbit.inventorymanagement.model.Item;
 import com.eightbit.inventorymanagement.model.Order;
+import com.eightbit.inventorymanagement.model.OrderItem;
 import com.eightbit.inventorymanagement.model.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,9 +21,51 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     // Create a new order
     public Order createOrder(Order order) {
         validateOrder(order);
+
+        Instant currentTime = Instant.now();
+        Instant orderExpireTime = currentTime.plus(Duration.ofMinutes(17)); // Give customer 2 min grace period
+        System.out.println("Current Time: " + currentTime);
+        System.out.println("15 Minutes Later: " + orderExpireTime);
+
+
+
+        String currentTimeString = currentTime.toString();
+        StringBuilder newOrderId = new StringBuilder(currentTimeString);
+
+        // Check item is available
+        List<OrderItem> orderItems = order.getItems();
+        for (OrderItem orderItem : orderItems) {
+            String itemId = orderItem.getItemId();
+            int quantity = orderItem.getQuantity();
+
+            // Validate item existence and availability
+            Item item = itemRepository.getItemById(itemId);
+            if (item == null) {
+                throw new IllegalArgumentException("Item " + itemId + " does not exist.");
+            }
+            String itemName = item.getItemName();
+            newOrderId.append(itemName);
+
+            if (quantity > item.getStockLevel()) {
+                throw new IllegalArgumentException("Insufficient stock for item " + itemName + ".");
+            }
+
+            // Update the stock level
+            itemRepository.replenishStock(itemId, quantity - item.getStockLevel());
+        }
+
+        order.setCustomerId("testUser"); // Use test user for now
+        order.setOrderId(newOrderId.toString());
+        order.setOrderTime(currentTime);
+        order.setHoldStartTime(currentTime);
+        order.setHoldExpiryTime(orderExpireTime);
+        order.setStatus(OrderStatus.HOLD);
         orderRepository.createOrder(order);
         return order; // Returning the created order for confirmation
     }
@@ -61,7 +108,7 @@ public class OrderService {
     }
 
     // Add or update items in an existing order
-    public boolean updateOrderItems(String orderId, List<Map<String, Object>> items) {
+    public boolean updateOrderItems(String orderId, List<OrderItem> items) {
         validateOrderId(orderId);
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Order items must be provided for update.");
@@ -99,9 +146,6 @@ public class OrderService {
         }
         if (order.getItems() == null || order.getItems().isEmpty()) {
             throw new IllegalArgumentException("Order items must be provided.");
-        }
-        if (order.getOrderTime() == null || order.getOrderTime().isEmpty()) {
-            throw new IllegalArgumentException("Order time must be provided.");
         }
     }
 

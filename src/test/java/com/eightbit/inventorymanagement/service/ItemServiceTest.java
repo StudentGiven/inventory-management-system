@@ -37,6 +37,7 @@ public class ItemServiceTest {
 
         assertEquals(item, result, "The added item should be returned");
         verify(itemRepository, times(1)).addItem(item);
+//        verify(itemRepository, never()).addItem(any(Item.class));
     }
 
     @Test
@@ -63,6 +64,7 @@ public class ItemServiceTest {
 
         assertEquals("Item ID must be provided.", exception.getMessage());
         verify(itemRepository, never()).addItem(any(Item.class));
+
     }
 
     @Test
