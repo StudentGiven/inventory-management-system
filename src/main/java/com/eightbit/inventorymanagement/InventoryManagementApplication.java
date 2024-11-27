@@ -58,7 +58,7 @@ public class InventoryManagementApplication {
         order.setHoldExpiryTime(expireTime);
         order.setStatus(OrderStatus.HOLD);
 
-        System.out.println("This is a test4");
+//        System.out.println("This is a test4");
 
         // Save the item to the DynamoDB table
 //        dynamoDBService.saveOrder(order);
