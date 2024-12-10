@@ -47,9 +47,9 @@ public class ItemService {
         if (itemId == null || itemId.isEmpty()) {
             throw new IllegalArgumentException("Item ID must be provided for stock replenishment.");
         }
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Replenishment quantity must be greater than zero.");
-        }
+//        if (quantity <= 0) {
+//            throw new IllegalArgumentException("Replenishment quantity must be greater than zero.");
+//        }
 
         Item item = itemRepository.getItemById(itemId);
         if (item == null) {
@@ -62,6 +62,10 @@ public class ItemService {
 
     // Set a threshold for an item
     public boolean setThreshold(String itemId, int threshold) {
+        if (threshold <= 0) {
+            throw new IllegalArgumentException("Threshold must be greater than zero.");
+        }
+
         Item item = itemRepository.getItemById(itemId);
         if (item != null) {
             itemRepository.setThreshold(itemId, threshold);

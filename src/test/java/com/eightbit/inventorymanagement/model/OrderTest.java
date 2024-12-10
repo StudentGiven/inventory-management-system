@@ -64,14 +64,14 @@ public class OrderTest {
     @Test
     public void testHoldStartTime() {
         Instant now = Instant.now();
-        order.setHoldStartTime(now);
+        order.setHoldStartTime(now.toString());
         assertEquals(now.toString(), order.getHoldStartTime());
     }
 
     @Test
     public void testHoldExpiryTime() {
         Instant now = Instant.now();
-        order.setHoldExpiryTime(now);
+        order.setHoldExpiryTime(now.toString());
         assertEquals(now.toString(), order.getHoldExpiryTime());
     }
 
