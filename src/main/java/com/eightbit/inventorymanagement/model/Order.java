@@ -15,6 +15,7 @@ public class Order {
     private List<OrderItem> items;
     private String holdStartTime;
     private String holdExpiryTime;
+    private String executionTime;
     private OrderStatus status;
 
     @DynamoDBHashKey(attributeName = "customerId")
@@ -31,8 +32,8 @@ public class Order {
         return orderTime;
     }
 
-    public void setOrderTime(Instant orderTime) {
-        this.orderTime = orderTime.toString();
+    public void setOrderTime(String orderTime) {
+        this.orderTime = orderTime;
     }
 
 //    public Instant getOrderTimeAsInstant() {
@@ -64,8 +65,8 @@ public class Order {
         return holdStartTime;
     }
 
-    public void setHoldStartTime(Instant holdStartTime) {
-        this.holdStartTime = holdStartTime.toString();
+    public void setHoldStartTime(String holdStartTime) {
+        this.holdStartTime = holdStartTime;
     }
 
     @DynamoDBAttribute(attributeName = "holdExpiryTime")
@@ -73,8 +74,17 @@ public class Order {
         return holdExpiryTime;
     }
 
-    public void setHoldExpiryTime(Instant holdExpiryTime) {
-        this.holdExpiryTime = holdExpiryTime.toString();
+    public void setHoldExpiryTime(String holdExpiryTime) {
+        this.holdExpiryTime = holdExpiryTime;
+    }
+
+    @DynamoDBAttribute(attributeName = "executionTime")
+    public String getExecutionTime() {
+        return executionTime;
+    }
+
+    public void setExecutionTime(String executionTime) {
+        this.executionTime = executionTime;
     }
 
     @DynamoDBTypeConvertedEnum

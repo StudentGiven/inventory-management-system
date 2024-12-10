@@ -5,6 +5,7 @@ import com.eightbit.inventorymanagement.model.Order;
 import com.eightbit.inventorymanagement.model.OrderItem;
 import com.eightbit.inventorymanagement.model.OrderStatus;
 import com.eightbit.inventorymanagement.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -23,8 +25,8 @@ public class OrderController {
 
     // Create a new order
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.createOrder(order);
+    public ResponseEntity<Order> createOrder(@RequestBody List<OrderItem> orderItems) {
+        Order createdOrder = orderService.createOrder(orderItems);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
@@ -58,9 +60,21 @@ public class OrderController {
         return ResponseEntity.ok(isExpired);
     }
 
+    @Autowired
+    private ObjectMapper objectMapper; // Spring's ObjectMapper for JSON processing
+
     // Update items in an existing order
     @PutMapping("/{orderId}/items")
     public ResponseEntity<Void> updateOrderItems(@PathVariable String orderId, @RequestBody List<OrderItem> items) {
+        System.out.println("Incoming items: " + items);
+        System.out.println("Incoming items size: " + items.size());
+        System.out.println("Incoming items id: " + items.get(0).getItemId());
+        System.out.println("Incoming items quantity: " + items.get(0).getQuantity());
+
+        // Convert request body to List<OrderItem>
+//        List<OrderItem> orderItems = items.stream()
+//                .map(item -> objectMapper.convertValue(item, OrderItem.class))
+//                .collect(Collectors.toList());
         boolean isUpdated = orderService.updateOrderItems(orderId, items);
         return isUpdated ? ResponseEntity.ok().build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();

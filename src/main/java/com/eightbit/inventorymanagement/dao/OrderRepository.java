@@ -48,7 +48,7 @@ public class OrderRepository {
         List<Order> orders = dynamoDBMapper.query(Order.class, queryExpression);
 
         // Return the first result or null if no matches
-        return orders.isEmpty() ? null : orders.get(0);
+        return orders.get(0);
 
     }
 
@@ -68,6 +68,9 @@ public class OrderRepository {
         Order order = getOrderById(orderId);
         if (order != null) {
             order.setStatus(status);
+            if (status.equals(OrderStatus.EXECUTED)) {
+                order.setExecutionTime(Instant.now().toString());
+            }
             dynamoDBMapper.save(order);
         }
     }

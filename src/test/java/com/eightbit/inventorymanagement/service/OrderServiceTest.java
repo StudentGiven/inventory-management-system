@@ -58,40 +58,40 @@ public class OrderServiceTest {
 //        verify(orderRepository, times(1)).createOrder(order);
 //    }
 
-    @Test
-    public void testCreateOrderWithNullOrder() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            orderService.createOrder(null);
-        });
+//    @Test
+//    public void testCreateOrderWithNullOrder() {
+//        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+//            orderService.createOrder(null);
+//        });
+//
+//        assertEquals("Order must not be null.", exception.getMessage());
+//        verify(orderRepository, never()).createOrder(any(Order.class));
+//    }
 
-        assertEquals("Order must not be null.", exception.getMessage());
-        verify(orderRepository, never()).createOrder(any(Order.class));
-    }
-
-    @Test
-    public void testCreateOrderWithMissingCustomerId() {
-        Order order = new Order();
-        List<OrderItem> items = new ArrayList<>();
-        OrderItem item = new OrderItem();
-        item.setItemId("item123");
-        item.setQuantity(10);
-
-        OrderItem item2 = new OrderItem();
-        item.setItemId("item456");
-        item.setQuantity(5);
-
-        items.add(item);
-        items.add(item2);
-        order.setItems(items);
-        order.setOrderTime(Instant.parse("2023-11-05T10:00:00Z"));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            orderService.createOrder(order);
-        });
-
-        assertEquals("Customer ID must be provided for the order.", exception.getMessage());
-        verify(orderRepository, never()).createOrder(any(Order.class));
-    }
+//    @Test
+//    public void testCreateOrderWithMissingCustomerId() {
+//        Order order = new Order();
+//        List<OrderItem> items = new ArrayList<>();
+//        OrderItem item = new OrderItem();
+//        item.setItemId("item123");
+//        item.setQuantity(10);
+//
+//        OrderItem item2 = new OrderItem();
+//        item.setItemId("item456");
+//        item.setQuantity(5);
+//
+//        items.add(item);
+//        items.add(item2);
+//        order.setItems(items);
+//        order.setOrderTime(Instant.parse("2023-11-05T10:00:00Z"));
+//
+//        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+//            orderService.createOrder(order);
+//        });
+//
+//        assertEquals("Customer ID must be provided for the order.", exception.getMessage());
+//        verify(orderRepository, never()).createOrder(any(Order.class));
+//    }
 
     @Test
     public void testGetOrderByIdWithValidId() {

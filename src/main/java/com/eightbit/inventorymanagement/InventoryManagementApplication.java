@@ -45,7 +45,7 @@ public class InventoryManagementApplication {
         Instant expireTime = now.plus(Duration.ofMinutes(17));
         Order order = new Order();
         order.setCustomerId("testUser1");
-        order.setOrderTime(now);
+        order.setOrderTime(now.toString());
         order.setOrderId("123648596");
         OrderItem orderItem = new OrderItem();
         orderItem.setItemId("100004");
@@ -54,8 +54,8 @@ public class InventoryManagementApplication {
         orderItems.add(orderItem);
         order.setItems(orderItems);
         order.setOrderId(now.toString() + orderItems.get(0).getItemId());
-        order.setHoldStartTime(now);
-        order.setHoldExpiryTime(expireTime);
+        order.setHoldStartTime(now.toString());
+        order.setHoldExpiryTime(expireTime.toString());
         order.setStatus(OrderStatus.HOLD);
 
 //        System.out.println("This is a test4");
