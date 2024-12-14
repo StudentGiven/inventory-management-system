@@ -9,6 +9,9 @@ import com.eightbit.inventorymanagement.model.OrderStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -23,6 +26,13 @@ public class OrderService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    private final SnsClient snsClient;
+    private final String snsTopicArn = "arn:aws:sns:us-east-1:974158333865:LowStockNotifications";
+
+    public OrderService() {
+        this.snsClient = SnsClient.create();
+    }
 
     // Create a new order
     public Order createOrder(List<OrderItem> orderItems) {
@@ -47,18 +57,30 @@ public class OrderService {
 
             // Validate item existence and availability
             Item item = itemRepository.getItemById(itemId);
+            int currentStock = item.getStockLevel();
             if (item == null) {
                 throw new IllegalArgumentException("Item " + itemId + " does not exist.");
             }
             String itemName = item.getItemName();
             newOrderId.append(itemName);
 
-            if (quantity > item.getStockLevel()) {
+            if (quantity > currentStock) {
                 throw new IllegalArgumentException("Insufficient stock for item " + itemName + ".");
             }
 
             // Update the stock level
             itemRepository.replenishStock(itemId, -quantity);
+
+            int threshold = item.getThreshold();
+            int newStockLevel = currentStock - quantity;
+            if (newStockLevel < threshold) {
+                String message = "Stock for item " + itemId + " is below the threshold. " +
+                        "Current stock: " + newStockLevel + ", Threshold: " + threshold;
+
+                sendNotification(message);
+            }
+
+
         }
 
         Order newOrder = new Order();
@@ -70,7 +92,26 @@ public class OrderService {
         newOrder.setStatus(OrderStatus.HOLD);
         newOrder.setItems(orderItems);
         orderRepository.createOrder(newOrder);
+
+
+
         return newOrder; // Returning the created order for confirmation
+    }
+
+    // Send an SNS notification
+    private void sendNotification(String message) {
+        try {
+            PublishRequest request = PublishRequest.builder()
+                    .message(message)
+                    .topicArn(snsTopicArn)
+                    .subject("Low Stock Alert")
+                    .build();
+
+            PublishResponse response = snsClient.publish(request);
+            System.out.println("Notification sent successfully. Message ID: " + response.messageId());
+        } catch (Exception e) {
+            System.err.println("Failed to send notification: " + e.getMessage());
+        }
     }
 
     // Retrieve a specific order by customerId and orderTime
