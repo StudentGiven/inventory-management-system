@@ -5,6 +5,10 @@ import com.eightbit.inventorymanagement.model.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +17,13 @@ public class ItemService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    private final SnsClient snsClient;
+    private final String snsTopicArn = "arn:aws:sns:us-east-1:974158333865:LowStockNotifications";
+
+    public ItemService() {
+        this.snsClient = SnsClient.create();
+    }
 
     // Retrieve all available items
     public List<Item> getAvailableItems() {
@@ -47,9 +58,6 @@ public class ItemService {
         if (itemId == null || itemId.isEmpty()) {
             throw new IllegalArgumentException("Item ID must be provided for stock replenishment.");
         }
-//        if (quantity <= 0) {
-//            throw new IllegalArgumentException("Replenishment quantity must be greater than zero.");
-//        }
 
         Item item = itemRepository.getItemById(itemId);
         if (item == null) {
@@ -57,7 +65,34 @@ public class ItemService {
         }
 
         itemRepository.replenishStock(itemId, quantity);
+        int currentStock = item.getStockLevel();
+        int threshold = item.getThreshold();
+        int newStockLevel = currentStock + quantity;
+
+        if (newStockLevel < threshold) {
+            String message = "Stock for item " + itemId + " is below the threshold. " +
+                    "Current stock: " + newStockLevel + ", Threshold: " + threshold;
+
+            sendNotification(message);
+        }
+
         return true;
+    }
+
+    // Send an SNS notification
+    private void sendNotification(String message) {
+        try {
+            PublishRequest request = PublishRequest.builder()
+                    .message(message)
+                    .topicArn(snsTopicArn)
+                    .subject("Low Stock Alert")
+                    .build();
+
+            PublishResponse response = snsClient.publish(request);
+            System.out.println("Notification sent successfully. Message ID: " + response.messageId());
+        } catch (Exception e) {
+            System.err.println("Failed to send notification: " + e.getMessage());
+        }
     }
 
     // Set a threshold for an item

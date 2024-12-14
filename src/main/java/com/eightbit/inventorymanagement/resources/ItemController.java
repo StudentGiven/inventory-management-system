@@ -26,6 +26,11 @@ public class ItemController {
 //        this.itemService = itemService;
 //    }
 
+    @GetMapping("/")
+    public String rootHandler() {
+        return "Welcome to the Inventory Management System!";
+    }
+
     // Retrieve all available items
     @GetMapping
     public ResponseEntity<List<Item>> getAvailableItems() {
